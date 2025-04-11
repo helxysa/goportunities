@@ -1,14 +1,44 @@
 package handler
 
 import (
-	 "github.com/gin-gonic/gin" 
-	  "net/http"
-)	
+	"github.com/gin-gonic/gin"
+	"github.com/helxysa/goportunities.git/schemas"
+	"net/http"
+)
 
+func CreateOpeningHandler(ctx *gin.Context) {
+	request := CreateOpeningRequest{}
+	
+	if err := ctx.BindJSON(&request); err != nil {
+		logger.Errorf("error binding request: %v", err.Error())
+		sendError(ctx, http.StatusBadRequest, err)
+		return
+	}
 
+	if err := request.Validate(); err != nil {
+		logger.Errorf("error validating request: %v", err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-func CreateOpeningHandler (ctx *gin.Context){
-	ctx.JSON(http.StatusOK, gin.H {
-		"message":"GET",
-	})
+	opening := schemas.Opening{
+		Role:     request.Role,
+		Company:  request.Company,
+		Location: request.Location,
+		Remote:   request.Remote,
+		Link:     request.Link,
+		Salary:   request.Salary,
+	}
+
+	if err := db.Create(&opening).Error; err != nil {
+		logger.Errorf("error creating opening: %v", err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, opening)
 }
