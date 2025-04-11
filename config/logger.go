@@ -1,7 +1,6 @@
 package config
 
 import (
-	"go/format"
 	"io"
 	"log"
 	"os"
@@ -16,7 +15,7 @@ type Logger struct {
 }
 
 
-func NewLogger(prefix string) *Logger {
+func newLogger(prefix string) *Logger {
 	writer := io.Writer(os.Stdout)
 	logger := log.New(writer, prefix, log.Ldate|log.Ltime)
 
