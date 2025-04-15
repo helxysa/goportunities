@@ -4,9 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func sendError(ctx *gin.Context, code int, err error) {
+func sendError(ctx *gin.Context, code int, err error, msg string) {
+	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(code, gin.H{
 		"error": err.Error(),
-		"errorCode": code, 
+		"message": msg, 
+		"errorCode": code,
 	})
 }

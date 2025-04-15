@@ -11,7 +11,7 @@ func CreateOpeningHandler(ctx *gin.Context) {
 	
 	if err := ctx.BindJSON(&request); err != nil {
 		logger.Errorf("error binding request: %v", err.Error())
-		sendError(ctx, http.StatusBadRequest, err)
+		sendError(ctx, http.StatusBadRequest, err, "error binding request")
 		return
 	}
 
@@ -40,5 +40,15 @@ func CreateOpeningHandler(ctx *gin.Context) {
 		return
 	}
 
+	sendSucess(ctx, http.StatusCreated, "Opening created successfully")
 	ctx.JSON(http.StatusCreated, opening)
+}
+
+
+func sendSucess(ctx *gin.Context, code int, msg string) {
+	ctx.Header("Content-Type", "application/json")
+	ctx.JSON(code, gin.H{
+		"message": msg, 
+		"errorCode": code,
+	})
 }
