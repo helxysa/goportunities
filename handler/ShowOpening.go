@@ -1,14 +1,27 @@
 package handler
 
 import (
-	 "github.com/gin-gonic/gin" 
-	  "net/http"
+	"fmt"
+	"github.com/gin-gonic/gin" 
+	"github.com/helxysa/goportunities.git/schemas"
+	"net/http"
 )	
 
 
 
 func ShowOpeningHandler (ctx *gin.Context){
-	ctx.JSON(http.StatusOK, gin.H {
-		"message":"GET",
-	})
+	id := ctx.Query("id")
+	if id == ""{
+		sendError(ctx, http.StatusBadRequest, fmt.Errorf("id parameter is empty"), "id parameter is empty")
+		return
+	}
+
+	opening := schemas.Opening{}
+	if err := db.First(&opening, id).Error; err != nil {
+		sendError(ctx, http.StatusNotFound, fmt.Errorf("opening not found"), "opening not found")
+		return
+	}
+
+	sendSucess(ctx, http.StatusOK, "opening found successfully")
+	ctx.JSON(http.StatusOK, opening)
 }
